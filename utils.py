@@ -14,7 +14,7 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 import constants as ct
-
+from langchain.schema import Document
 
 ############################################################
 # 設定関連
