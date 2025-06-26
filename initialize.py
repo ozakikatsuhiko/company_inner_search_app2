@@ -254,6 +254,36 @@ def file_load(path, docs_all):
         # ファイルの拡張子に合ったdata loaderを使ってデータ読み込み
         loader = ct.SUPPORTED_EXTENSIONS[file_extension](path)
         docs = loader.load()
+        
+        # 各ドキュメントのメタデータを拡張
+        for doc in docs:
+            # 既存のメタデータを保持しつつ、追加情報を格納
+            doc.metadata.update({
+                'file_name': file_name,
+                'file_path': path,
+                'file_extension': file_extension,
+                'content_preview': doc.page_content[:100] + "..." if len(doc.page_content) > 100 else doc.page_content,
+                'content_length': len(doc.page_content)
+            })
+            
+            # PDFファイルの場合、ページ番号情報をより詳細に処理
+            if file_extension == ".pdf" and 'page' in doc.metadata:
+                # ページ番号を1ベースに調整（PyMuPDFLoaderは0ベース）
+                doc.metadata['page'] = doc.metadata.get('page', 0) + 1
+                doc.metadata['page_info'] = f"ページ {doc.metadata['page']}"
+            
+            # DOCXファイルの場合、ページ情報を推定
+            elif file_extension == ".docx":
+                # 文字数からページ数を推定（1ページあたり約400文字と仮定）
+                estimated_page = (len(doc.page_content) // 400) + 1
+                doc.metadata['estimated_page'] = estimated_page
+                doc.metadata['page_info'] = f"推定ページ {estimated_page}"
+            
+            # CSVファイルの場合、行番号情報を追加
+            elif file_extension == ".csv":
+                if 'row' in doc.metadata:
+                    doc.metadata['row_info'] = f"行 {doc.metadata['row']}"
+        
         docs_all.extend(docs)
 
 

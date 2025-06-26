@@ -25,7 +25,7 @@ def display_app_title():
     st.markdown(f"# {ct.APP_NAME}")
 
 
-def display_select_mode_and_help():
+def display_select_mode():
     """
     サイドバー：利用目的ラジオ＋説明
     """
@@ -92,13 +92,6 @@ def display_initial_ai_message():
 #            options=[ct.ANSWER_MODE_1, ct.ANSWER_MODE_2],
 #            label_visibility="collapsed"
 #       )
-
-
-#def display_app_title():
-#    """
-#    メインエリア：タイトル表示
-#    """
-#    st.markdown(f"# {ct.APP_NAME}")
 
 
 #def display_select_mode_and_help():
