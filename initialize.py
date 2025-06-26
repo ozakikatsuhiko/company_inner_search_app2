@@ -25,7 +25,21 @@ import constants as ct
 # 設定関連
 ############################################################
 # 「.env」ファイルで定義した環境変数の読み込み
-load_dotenv()
+# 現在のファイルと同じディレクトリの.envファイルを明示的に指定
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+# 環境変数の読み込み確認
+import logging
+temp_logger = logging.getLogger('temp')
+if os.getenv("OPENAI_API_KEY"):
+    temp_logger.info(f"OPENAI_API_KEY loaded from {dotenv_path}")
+else:
+    temp_logger.warning(f"OPENAI_API_KEY not found. Checking .env file at {dotenv_path}")
+    if os.path.exists(dotenv_path):
+        temp_logger.info(f".env file exists at {dotenv_path}")
+    else:
+        temp_logger.error(f".env file not found at {dotenv_path}")
 
 
 ############################################################
@@ -109,33 +123,54 @@ def initialize_retriever():
     if "retriever" in st.session_state:
         return
     
-    # RAGの参照先となるデータソースの読み込み
-    docs_all = load_data_sources()
+    try:
+        # RAGの参照先となるデータソースの読み込み
+        logger.info("データソースの読み込み開始")
+        docs_all = load_data_sources()
+        logger.info(f"データソース読み込み完了: {len(docs_all)}件")
 
-    # OSがWindowsの場合、Unicode正規化と、cp932（Windows用の文字コード）で表現できない文字を除去
-    for doc in docs_all:
-        doc.page_content = adjust_string(doc.page_content)
-        for key in doc.metadata:
-            doc.metadata[key] = adjust_string(doc.metadata[key])
-    
-    # 埋め込みモデルの用意
-    embeddings = OpenAIEmbeddings()
-    
-    # チャンク分割用のオブジェクトを作成
-    text_splitter = CharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50,
-        separator="\n"
-    )
+        # OSがWindowsの場合、Unicode正規化と、cp932（Windows用の文字コード）で表現できない文字を除去
+        for doc in docs_all:
+            doc.page_content = adjust_string(doc.page_content)
+            for key in doc.metadata:
+                doc.metadata[key] = adjust_string(doc.metadata[key])
+        
+        # OpenAI API Key の確認
+        import os
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY環境変数が設定されていません")
+        logger.info("OPENAI_API_KEY環境変数が設定されています")
+        
+        # 埋め込みモデルの用意
+        logger.info("OpenAIEmbeddingsの初期化開始")
+        embeddings = OpenAIEmbeddings()
+        logger.info("OpenAIEmbeddingsの初期化完了")
+        
+        # チャンク分割用のオブジェクトを作成
+        text_splitter = CharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50,
+            separator="\n"
+        )
 
-    # チャンク分割を実施
-    splitted_docs = text_splitter.split_documents(docs_all)
+        # チャンク分割を実施
+        logger.info("チャンク分割開始")
+        splitted_docs = text_splitter.split_documents(docs_all)
+        logger.info(f"チャンク分割完了: {len(splitted_docs)}件")
 
-    # ベクターストアの作成
-    db = Chroma.from_documents(splitted_docs, embedding=embeddings)
+        # ベクターストアの作成
+        logger.info("ベクターストア作成開始")
+        db = Chroma.from_documents(splitted_docs, embedding=embeddings)
+        logger.info("ベクターストア作成完了")
 
-    # ベクターストアを検索するRetrieverの作成
-    st.session_state.retriever = db.as_retriever(search_kwargs={"k": 3})
+        # ベクターストアを検索するRetrieverの作成
+        st.session_state.retriever = db.as_retriever(search_kwargs={"k": 3})
+        logger.info("Retriever作成完了")
+        
+    except Exception as e:
+        logger.error(f"initialize_retrieverでエラーが発生しました: {type(e).__name__}: {str(e)}")
+        raise
 
 
 def initialize_session_state():
