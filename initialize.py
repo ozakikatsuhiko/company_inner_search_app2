@@ -148,9 +148,10 @@ def initialize_retriever():
         logger.info("OpenAIEmbeddingsの初期化完了")
         
         # チャンク分割用のオブジェクトを作成
+        # チュンク変数を変数化
         text_splitter = CharacterTextSplitter(
-            chunk_size=500,
-            chunk_overlap=50,
+            chunk_size=ct.CHUNK_SIZE_NUMBER,
+            chunk_overlap=ct.CHUNK_OVERLAP_NUMBER,
             separator="\n"
         )
 
@@ -165,7 +166,8 @@ def initialize_retriever():
         logger.info("ベクターストア作成完了")
 
         # ベクターストアを検索するRetrieverの作成
-        st.session_state.retriever = db.as_retriever(search_kwargs={"k": 3})
+        #st.session_state.retriever = db.as_retriever(search_kwargs={"k": 3})
+        st.session_state.retriever = db.as_retriever(search_kwargs={"k": 5})
         logger.info("Retriever作成完了")
         
     except Exception as e:
