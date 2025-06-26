@@ -284,12 +284,18 @@ def file_load(path, docs_all):
                 if 'row' in doc.metadata:
                     doc.metadata['row_info'] = f"行 {doc.metadata['row']}"
         
-        # CSVファイルの場合、各行を1つのドキュメントに統合
+        # CSVファイルの統合方法をより詳細に制御
         if file_extension == ".csv" and docs:
-            # 全行の内容を結合
-            combined_content = "\n".join([doc.page_content for doc in docs])
+            # ヘッダー行を取得（最初の行）
+            header_row = docs[0].page_content if docs else ""
             
-            # 統合されたドキュメントを作成
+            # データ行を結合（ヘッダーを除く）
+            data_rows = [doc.page_content for doc in docs[1:]] if len(docs) > 1 else []
+            
+            # 表形式で整理した内容を作成
+            combined_content = f"【CSVデータ】\nヘッダー: {header_row}\n\nデータ行:\n" + "\n".join(data_rows)
+            
+            # メタデータにヘッダー情報も追加
             combined_doc = type(docs[0])(
                 page_content=combined_content,
                 metadata={
@@ -300,7 +306,9 @@ def file_load(path, docs_all):
                     'content_preview': combined_content[:100] + "..." if len(combined_content) > 100 else combined_content,
                     'content_length': len(combined_content),
                     'total_rows': len(docs),
-                    'document_type': 'csv_unified'
+                    'document_type': 'csv_unified',
+                    'csv_header': header_row,
+                    'data_rows_count': len(data_rows)
                 }
             )
             # 統合されたドキュメントのみを追加
