@@ -167,7 +167,7 @@ def initialize_retriever():
 
         # ベクターストアを検索するRetrieverの作成
         #st.session_state.retriever = db.as_retriever(search_kwargs={"k": 3})
-        st.session_state.retriever = db.as_retriever(search_kwargs={"k": 5})
+        st.session_state.retriever = db.as_retriever(search_kwargs={"k": 7})
         logger.info("Retriever作成完了")
         
     except Exception as e:
