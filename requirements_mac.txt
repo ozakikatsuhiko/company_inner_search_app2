@@ -59,7 +59,7 @@ mypy-extensions==1.0.0
 narwhals==1.16.0
 numpy==1.26.4
 onnxruntime==1.20.1
-openai==1.57.0
+openai
 orjson==3.10.12
 overrides==7.7.0
 packaging==24.2
