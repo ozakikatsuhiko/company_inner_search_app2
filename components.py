@@ -260,6 +260,7 @@ def display_search_llm_response(llm_response):
         if "page" in llm_response["context"][0].metadata:
             # ページ番号を取得
             main_page_number = llm_response["context"][0].metadata["page"]
+            print(f"main_page_number: {main_page_number}")
             # 「メインドキュメントのファイルパス」と「ページ番号」を表示
             st.success(f"{main_file_path}", icon=icon)
         else:
