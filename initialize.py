@@ -284,7 +284,30 @@ def file_load(path, docs_all):
                 if 'row' in doc.metadata:
                     doc.metadata['row_info'] = f"行 {doc.metadata['row']}"
         
-        docs_all.extend(docs)
+        # CSVファイルの場合、各行を1つのドキュメントに統合
+        if file_extension == ".csv" and docs:
+            # 全行の内容を結合
+            combined_content = "\n".join([doc.page_content for doc in docs])
+            
+            # 統合されたドキュメントを作成
+            combined_doc = type(docs[0])(
+                page_content=combined_content,
+                metadata={
+                    'source': path,
+                    'file_name': file_name,
+                    'file_path': path,
+                    'file_extension': file_extension,
+                    'content_preview': combined_content[:100] + "..." if len(combined_content) > 100 else combined_content,
+                    'content_length': len(combined_content),
+                    'total_rows': len(docs),
+                    'document_type': 'csv_unified'
+                }
+            )
+            # 統合されたドキュメントのみを追加
+            docs_all.append(combined_doc)
+        else:
+            # CSV以外のファイルは従来通り
+            docs_all.extend(docs)
 
 
 def adjust_string(s):
