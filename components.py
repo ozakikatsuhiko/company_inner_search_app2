@@ -262,7 +262,7 @@ def display_search_llm_response(llm_response):
             main_page_number = llm_response["context"][0].metadata["page"]
             print(f"main_page_number: {main_page_number}")
             # 「メインドキュメントのファイルパス」と「ページ番号」を表示
-            st.success(f"{main_file_path}", icon=icon)
+            st.success(f"{main_file_path}のページ番号は取得できませんでした。", icon=icon)
         else:
             # 「メインドキュメントのファイルパス」を表示
             print("ページ番号は取得できませんでした。")
@@ -319,7 +319,7 @@ def display_search_llm_response(llm_response):
                 # ページ番号が取得できない場合のための分岐処理
                 if "page_number" in sub_choice:
                     # 「サブドキュメントのファイルパス」と「ページ番号」を表示
-                    st.info(f"{sub_choice['source']}", icon=icon)
+                    st.info(f"{sub_choice['source']}の{sub_choice['page_number']}ページ", icon=icon)
                 else:
                     # 「サブドキュメントのファイルパス」を表示
                     st.info(f"{sub_choice['source']}", icon=icon)
