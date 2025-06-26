@@ -39,7 +39,7 @@ APP_BOOT_MESSAGE = "アプリが起動されました。"
 # ==========================================
 # LLM設定系
 # ==========================================
-MODEL = "gpt-4o"
+MODEL = "gpt-4o-mini"
 TEMPERATURE = 0.5
 
 
@@ -93,12 +93,12 @@ SYSTEM_PROMPT_INQUIRY = """
 # ===========================================
 #  Chunk 設定
 # ==========================================
-#CHUNK_SIZE_NUMBER = 1000
-#CHUNK_OVERLAP_NUMBER = 50
+CHUNK_SIZE_NUMBER = 1000
+CHUNK_OVERLAP_NUMBER = 50
 
 # CSVファイル専用のチャンク設定（大きなサイズで分割を避ける）
-CSV_CHUNK_SIZE_NUMBER = 3000
-CSV_CHUNK_OVERLAP_NUMBER = 100
+#CSV_CHUNK_SIZE_NUMBER = 3000
+#CSV_CHUNK_OVERLAP_NUMBER = 100
 
 # ==========================================
 # LLMレスポンスの一致判定用
