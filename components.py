@@ -265,7 +265,7 @@ def display_search_llm_response(llm_response):
             st.success(f"{main_file_path}", icon=icon)
         else:
             # 「メインドキュメントのファイルパス」を表示
-            ptint("ページ番号は取得できませんでした。")
+            print("ページ番号は取得できませんでした。")
             st.success(f"{main_file_path}", icon=icon)
 
         # ==========================================
